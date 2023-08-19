@@ -2,7 +2,6 @@
 
 namespace Jeffgreco13\FilamentWave;
 
-use MaxGraphQL\Types\Query;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
@@ -117,6 +116,7 @@ class FilamentWave
     public function accessToken(string $accessToken)
     {
         $this->accessToken = $accessToken;
+
         return $this;
     }
     public function getAccessToken(): string
