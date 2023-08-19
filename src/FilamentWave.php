@@ -3,10 +3,10 @@
 namespace Jeffgreco13\FilamentWave;
 
 use Illuminate\Support\Facades\Http;
-use Laravel\Socialite\Facades\Socialite;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesBusinesses;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
+use Laravel\Socialite\Facades\Socialite;
 
 class FilamentWave
 {
@@ -68,6 +68,7 @@ class FilamentWave
     public function cachedMethod(string $cachedMethod)
     {
         $this->cachedMethod = $cachedMethod;
+
         return $this;
     }
 
@@ -80,7 +81,7 @@ class FilamentWave
     {
         return collect([
             'page' => $this->getPage(),
-            'pageSize' => $this->getPageSize()
+            'pageSize' => $this->getPageSize(),
         ])
             ->merge($arguments)
             ->implode(function ($value, $key) {
@@ -91,13 +92,17 @@ class FilamentWave
     public function page(int $page)
     {
         $this->page = $page;
+
         return $this;
     }
+
     public function nextPage()
     {
         $this->page++;
+
         return $this;
     }
+
     public function getPage(): int
     {
         return $this->page;
@@ -106,8 +111,10 @@ class FilamentWave
     public function pageSize(int $pageSize)
     {
         $this->pageSize = $pageSize;
+
         return $this;
     }
+
     public function getPageSize(): int
     {
         return $this->pageSize;
@@ -119,6 +126,7 @@ class FilamentWave
 
         return $this;
     }
+
     public function getAccessToken(): string
     {
         return $this->accessToken;
@@ -127,8 +135,10 @@ class FilamentWave
     public function businessId(int $businessId)
     {
         $this->businessId = $businessId;
+
         return $this;
     }
+
     public function getBusinessId(): string
     {
         return $this->businessId;
@@ -143,5 +153,4 @@ class FilamentWave
     {
         return Socialite::driver('wave');
     }
-
 }

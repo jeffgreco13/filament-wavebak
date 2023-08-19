@@ -2,10 +2,10 @@
 
 namespace Jeffgreco13\FilamentWave\REST\Actions;
 
-use MaxGraphQL\Types\Query;
 use Illuminate\Support\Collection;
-use Jeffgreco13\FilamentWave\REST\Cursor;
 use Jeffgreco13\FilamentWave\REST\Business;
+use Jeffgreco13\FilamentWave\REST\Cursor;
+use MaxGraphQL\Types\Query;
 
 trait ManagesBusinesses
 {
@@ -13,19 +13,22 @@ trait ManagesBusinesses
     {
         $pages = $this->page(1)->pageSize(200)->paginateBusinesses(...$args);
         $records = collect();
-        foreach ($pages as $page){
+        foreach ($pages as $page) {
             $records = $records->merge($page);
         }
+
         return $records;
     }
 
-    public function paginateBusinesses(...$args) {
+    public function paginateBusinesses(...$args)
+    {
         $data = $this->getBusinesses(...$args);
+
         return new Cursor($data['records'], $data['pageInfo'], $this);
     }
 
     public function getBusinesses(
-        array $fields = ['id', 'name','isPersonal'],
+        array $fields = ['id', 'name', 'isPersonal'],
         array $arguments = []
     ) {
         $this->validate(['accessToken']);
@@ -51,12 +54,12 @@ trait ManagesBusinesses
         $pageInfo = data_get($responseData, "data.{$key}.pageInfo", null);
 
         $records = collect(data_get($responseData, "data.{$key}.edges", []))->map(function ($item) {
-                return new Business($item['node']);
-            });
+            return new Business($item['node']);
+        });
 
         return [
             'pageInfo' => $pageInfo,
-            'records' => $records
+            'records' => $records,
         ];
     }
 }

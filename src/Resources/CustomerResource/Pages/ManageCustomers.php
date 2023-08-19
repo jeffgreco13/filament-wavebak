@@ -4,8 +4,8 @@ namespace Jeffgreco13\FilamentWave\Resources\CustomerResource\Pages;
 
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
-use Jeffgreco13\FilamentWave\Models\Customer;
 use Jeffgreco13\FilamentWave\Facades\FilamentWave;
+use Jeffgreco13\FilamentWave\Models\Customer;
 use Jeffgreco13\FilamentWave\Resources\CustomerResource;
 
 class ManageCustomers extends ManageRecords

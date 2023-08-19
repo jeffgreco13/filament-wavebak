@@ -2,10 +2,10 @@
 
 namespace Jeffgreco13\FilamentWave\REST;
 
-use Exception;
 use ArrayAccess;
-use Illuminate\Support\Arr;
+use Exception;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 
 class Resource implements ArrayAccess, Arrayable
 {
@@ -15,11 +15,11 @@ class Resource implements ArrayAccess, Arrayable
     {
         $this->attributes = $attributes;
     }
+
     /**
      * Get all of the attributes except for a specified array of keys.
      *
-     * @param  array|string $keys
-     * @return array
+     * @param  array|string  $keys
      */
     public function except($keys): array
     {
@@ -29,8 +29,7 @@ class Resource implements ArrayAccess, Arrayable
     /**
      * Get a subset of the attributes.
      *
-     * @param  array|string $keys
-     * @return array
+     * @param  array|string  $keys
      */
     public function only($keys): array
     {
@@ -38,7 +37,7 @@ class Resource implements ArrayAccess, Arrayable
     }
 
     /**
-     * @param  string $key
+     * @param  string  $key
      * @return mixed
      */
     public function __get($key)
@@ -47,12 +46,11 @@ class Resource implements ArrayAccess, Arrayable
             return $this->getAttribute($key);
         }
 
-        throw new Exception('Property ' . $key . ' does not exist on ' . get_called_class());
+        throw new Exception('Property '.$key.' does not exist on '.get_called_class());
     }
 
     /**
-     * @param  string $key
-     * @return bool
+     * @param  string  $key
      */
     public function __isset($key): bool
     {
@@ -111,7 +109,7 @@ class Resource implements ArrayAccess, Arrayable
     /**
      * Get an attribute.
      *
-     * @param  string $key
+     * @param  string  $key
      * @return mixed
      */
     protected function getAttribute($key)
@@ -122,8 +120,8 @@ class Resource implements ArrayAccess, Arrayable
     /**
      * Set an attribute.
      *
-     * @param string $key
-     * @param mixed $value
+     * @param  string  $key
+     * @param  mixed  $value
      */
     protected function setAttribute($key, $value)
     {

@@ -2,16 +2,19 @@
 
 namespace Jeffgreco13\FilamentWave\REST;
 
-use Iterator;
-use RuntimeException;
 use Illuminate\Support\Collection;
+use Iterator;
 use Jeffgreco13\FilamentWave\FilamentWave;
+use RuntimeException;
 
 class Cursor implements Iterator
 {
     protected array $results = [];
+
     protected int $position = 0;
+
     protected array $pageInfo = [];
+
     protected $filamentWave;
 
     public function __construct(Collection $results, array $pageInfo, FilamentWave $filamentWave)
@@ -45,14 +48,14 @@ class Cursor implements Iterator
     {
         $this->position++;
 
-        if (!$this->valid() && $this->hasNext()) {
+        if (! $this->valid() && $this->hasNext()) {
             $this->results[$this->position] = $this->fetchNextResults();
         }
     }
 
     public function prev(): void
     {
-        if (!$this->hasPrev()) {
+        if (! $this->hasPrev()) {
             throw new RuntimeException('No previous results available.');
         }
 
@@ -74,7 +77,7 @@ class Cursor implements Iterator
         $method = $this->filamentWave->getCachedMethod();
         $data = $this->filamentWave->nextPage()->{$method}();
         $this->pageInfo = $data['pageInfo'];
+
         return $data['records'];
     }
-
 }
