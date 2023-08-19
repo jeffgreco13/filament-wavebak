@@ -16,9 +16,9 @@ class ManageCustomers extends ManageRecords
         return [
             // Actions\CreateAction::make(),
             Actions\Action::make('sync')
-                ->action(function(){
+                ->action(function () {
                     dd(FilamentWave::getCustomers());
-                })
+                }),
         ];
     }
 }

@@ -5,7 +5,6 @@ namespace Jeffgreco13\FilamentWave;
 use Illuminate\Support\Facades\Event;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Jeffgreco13\FilamentWave\Commands\FilamentWaveCommand;
 
 class FilamentWaveServiceProvider extends PackageServiceProvider
 {
@@ -18,7 +17,7 @@ class FilamentWaveServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('filament-wave');
-            // ->hasMigration('create_filament_wave_customers_table');
+        // ->hasMigration('create_filament_wave_customers_table');
     }
 
     public function registeringPackage()
@@ -31,7 +30,7 @@ class FilamentWaveServiceProvider extends PackageServiceProvider
 
     public function bootingPackage()
     {
-        $migrationFileName = "create_wave_customers_table";
+        $migrationFileName = 'create_wave_customers_table';
         $filePath = $this->package->basePath("/../database/migrations/{$migrationFileName}.php");
         $this->publishes([
             $filePath => $this->generateMigrationName(

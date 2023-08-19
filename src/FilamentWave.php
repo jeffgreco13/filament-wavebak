@@ -2,29 +2,37 @@
 
 namespace Jeffgreco13\FilamentWave;
 
-use MaxGraphQL\Types\Query;
 use Illuminate\Support\Facades\Http;
+use MaxGraphQL\Types\Query;
 
 class FilamentWave
 {
-    const AUTHURL = "https://api.waveapps.com/oauth2/authorize";
-    const TOKENURL = "https://api.waveapps.com/oauth2/token/";
-    const REVOKEURL = "https://api.waveapps.com/oauth2/token-revoke";
-    const QUERYURL = "https://gql.waveapps.com/graphql/public";
+    const AUTHURL = 'https://api.waveapps.com/oauth2/authorize';
+
+    const TOKENURL = 'https://api.waveapps.com/oauth2/token/';
+
+    const REVOKEURL = 'https://api.waveapps.com/oauth2/token-revoke';
+
+    const QUERYURL = 'https://gql.waveapps.com/graphql/public';
 
     protected ?string $accessToken;
+
     protected ?string $businessId;
+
     protected ?string $clientId;
+
     protected ?string $clientSecret;
 
     protected $queryObject;
+
     protected array $queryArguments = [
         'page' => 1,
         'pageSize' => 10,
     ];
+
     protected ?string $key;
 
-    public function __construct(?string $accessToken = null, ?string $businessId = null, ?string $clientId = null, ?string $clientSecret = null)
+    public function __construct(string $accessToken = null, string $businessId = null, string $clientId = null, string $clientSecret = null)
     {
         $this->accessToken = $accessToken ?? env('WAVE_ACCESS_TOKEN');
         $this->businessId = $businessId ?? env('WAVE_BUSINESS_ID');
@@ -34,14 +42,15 @@ class FilamentWave
 
     protected function execute(string $query)
     {
-        $query = ["query" => $query];
+        $query = ['query' => $query];
         $request = Http::withToken($this->accessToken)->asJson()->post(
             self::QUERYURL,
             $query
         );
         if ($request->failed()) {
-            throw new \Exception("Wave returned a failure. Check your request and try again.");
+            throw new \Exception('Wave returned a failure. Check your request and try again.');
         }
+
         return $request->json();
     }
 
@@ -57,6 +66,7 @@ class FilamentWave
     public function accessToken(string $accessToken)
     {
         $this->accessToken = $accessToken;
+
         return $this;
     }
 
@@ -69,7 +79,7 @@ class FilamentWave
         array $fields = ['id', 'name'],
         array $arguments = [
             'page' => 1,
-            'pageSize' => 10
+            'pageSize' => 10,
         ]
     ) {
         $this->validate(['accessToken']);
@@ -79,11 +89,11 @@ class FilamentWave
             'pageInfo' => [
                 'currentPage',
                 'totalPages',
-                'totalCount'
+                'totalCount',
             ],
             'edges' => [
-                'node' => $fields
-            ]
+                'node' => $fields,
+            ],
         ]);
         $this->queryObject->addArguments($arguments);
 
@@ -95,8 +105,8 @@ class FilamentWave
         });
 
         return array_merge([
-            "pageInfo" => $pageInfo,
-            'records' => $edgeData
+            'pageInfo' => $pageInfo,
+            'records' => $edgeData,
         ]);
     }
 
@@ -104,7 +114,7 @@ class FilamentWave
         array $fields = ['id', 'name', 'email'],
         array $arguments = [
             'page' => 1,
-            'pageSize' => 10
+            'pageSize' => 10,
         ]
     ) {
         $this->validate(['accessToken']);
@@ -121,12 +131,12 @@ class FilamentWave
                 'pageInfo' => [
                     'currentPage',
                     'totalPages',
-                    'totalCount'
+                    'totalCount',
                 ],
                 'edges' => [
-                    'node' => $fields
-                ]
-            ]
+                    'node' => $fields,
+                ],
+            ],
         ]);
         $responseData = $this->execute($this->queryObject->getPreparedQuery());
 
@@ -136,10 +146,8 @@ class FilamentWave
         });
 
         return array_merge([
-            "pageInfo" => $pageInfo,
-            'records' => $edgeData
+            'pageInfo' => $pageInfo,
+            'records' => $edgeData,
         ]);
     }
-
-
 }

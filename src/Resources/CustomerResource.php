@@ -2,16 +2,12 @@
 
 namespace Jeffgreco13\FilamentWave\Resources;
 
-use Jeffgreco13\FilamentWave\Resources\CustomerResource\Pages;
-use Jeffgreco13\FilamentWave\Resources\CustomerResource\RelationManagers;
-use Jeffgreco13\FilamentWave\Models\Customer;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Jeffgreco13\FilamentWave\Models\Customer;
+use Jeffgreco13\FilamentWave\Resources\CustomerResource\Pages;
 
 class CustomerResource extends Resource
 {
