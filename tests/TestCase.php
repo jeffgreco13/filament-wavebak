@@ -3,8 +3,8 @@
 namespace Jeffgreco13\FilamentWave\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Jeffgreco13\FilamentWave\FilamentWaveServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {

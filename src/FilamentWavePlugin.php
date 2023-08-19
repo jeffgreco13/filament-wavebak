@@ -2,14 +2,14 @@
 
 namespace Jeffgreco13\FilamentWave;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
+use Filament\Panel;
 use Jeffgreco13\FilamentWave\Resources\CustomerResource;
 
 class FilamentWavePlugin implements Plugin
 {
-
     protected bool $hasCustomers = false;
+
     protected $customerResourceClass;
 
     public function getId(): string
@@ -25,7 +25,7 @@ class FilamentWavePlugin implements Plugin
     public function register(Panel $panel): void
     {
         $resources = [];
-        if ($this->hasCustomers()){
+        if ($this->hasCustomers()) {
             $resources[] = $this->getCustomerResourceClass();
         }
         $panel
@@ -40,10 +40,11 @@ class FilamentWavePlugin implements Plugin
         //
     }
 
-    public function customers(bool $condition = true,$resource = CustomerResource::class): static
+    public function customers(bool $condition = true, $resource = CustomerResource::class): static
     {
         $this->hasCustomers = $condition;
         $this->customerResourceClass = $resource;
+
         return $this;
     }
 

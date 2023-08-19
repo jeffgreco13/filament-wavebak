@@ -4,27 +4,38 @@ namespace Jeffgreco13\FilamentWave;
 
 use MaxGraphQL\Types\Query;
 use Illuminate\Support\Facades\Http;
+use Laravel\Socialite\Facades\Socialite;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesBusinesses;
 
 class FilamentWave
 {
-    const AUTHURL = "https://api.waveapps.com/oauth2/authorize";
-    const TOKENURL = "https://api.waveapps.com/oauth2/token/";
-    const REVOKEURL = "https://api.waveapps.com/oauth2/token-revoke";
-    const QUERYURL = "https://gql.waveapps.com/graphql/public";
+    use ManagesCustomers, ManagesBusinesses, ManagesProducts;
+
+    const AUTHURL = 'https://api.waveapps.com/oauth2/authorize';
+
+    const TOKENURL = 'https://api.waveapps.com/oauth2/token/';
+
+    const REVOKEURL = 'https://api.waveapps.com/oauth2/token-revoke';
+
+    const QUERYURL = 'https://gql.waveapps.com/graphql/public';
 
     protected ?string $accessToken;
+
     protected ?string $businessId;
+
     protected ?string $clientId;
+
     protected ?string $clientSecret;
 
-    protected $queryObject;
-    protected array $queryArguments = [
-        'page' => 1,
-        'pageSize' => 10,
-    ];
-    protected ?string $key;
+    protected int $page = 1;
 
-    public function __construct(?string $accessToken = null, ?string $businessId = null, ?string $clientId = null, ?string $clientSecret = null)
+    protected int $pageSize = 10;
+
+    protected ?string $cachedMethod;
+
+    public function __construct(string $accessToken = null, string $businessId = null, string $clientId = null, string $clientSecret = null)
     {
         $this->accessToken = $accessToken ?? env('WAVE_ACCESS_TOKEN');
         $this->businessId = $businessId ?? env('WAVE_BUSINESS_ID');
@@ -32,16 +43,17 @@ class FilamentWave
         $this->clientSecret = $clientSecret ?? env('WAVE_CLIENT_SECRET');
     }
 
-    protected function execute(string $query)
+    public function execute(string $query)
     {
-        $query = ["query" => $query];
+        $query = ['query' => $query];
         $request = Http::withToken($this->accessToken)->asJson()->post(
             self::QUERYURL,
             $query
         );
         if ($request->failed()) {
-            throw new \Exception("Wave returned a failure. Check your request and try again.");
+            throw new \Exception('Wave returned a failure. Check your request and try again.');
         }
+
         return $request->json();
     }
 
@@ -49,9 +61,57 @@ class FilamentWave
     {
         foreach ($properties as $property) {
             if (empty($this->{$property})) {
-                throw new \Exception("Property {$property} cannot be empty");
+                throw new \Exception("Property {$property} cannot be empty.");
             }
         }
+    }
+
+    public function cachedMethod(string $cachedMethod)
+    {
+        $this->cachedMethod = $cachedMethod;
+        return $this;
+    }
+
+    public function getCachedMethod()
+    {
+        return $this->cachedMethod;
+    }
+
+    protected function prepareArguments(array $arguments): string
+    {
+        return collect([
+            'page' => $this->getPage(),
+            'pageSize' => $this->getPageSize()
+        ])
+            ->merge($arguments)
+            ->implode(function ($value, $key) {
+                return "{$key}: {$value}";
+            }, ', ');
+    }
+
+    public function page(int $page)
+    {
+        $this->page = $page;
+        return $this;
+    }
+    public function nextPage()
+    {
+        $this->page++;
+        return $this;
+    }
+    public function getPage(): int
+    {
+        return $this->page;
+    }
+
+    public function pageSize(int $pageSize)
+    {
+        $this->pageSize = $pageSize;
+        return $this;
+    }
+    public function getPageSize(): int
+    {
+        return $this->pageSize;
     }
 
     public function accessToken(string $accessToken)
@@ -59,87 +119,29 @@ class FilamentWave
         $this->accessToken = $accessToken;
         return $this;
     }
+    public function getAccessToken(): string
+    {
+        return $this->accessToken;
+    }
+
+    public function businessId(int $businessId)
+    {
+        $this->businessId = $businessId;
+        return $this;
+    }
+    public function getBusinessId(): string
+    {
+        return $this->businessId;
+    }
 
     public function rawQuery(string $query)
     {
         return $this->execute($query);
     }
 
-    public function getBusinesses(
-        array $fields = ['id', 'name'],
-        array $arguments = [
-            'page' => 1,
-            'pageSize' => 10
-        ]
-    ) {
-        $this->validate(['accessToken']);
-        $this->key = 'businesses';
-        $this->queryObject = new Query($this->key);
-        $this->queryObject->addSelect([
-            'pageInfo' => [
-                'currentPage',
-                'totalPages',
-                'totalCount'
-            ],
-            'edges' => [
-                'node' => $fields
-            ]
-        ]);
-        $this->queryObject->addArguments($arguments);
-
-        $responseData = $this->execute($this->queryObject->getPreparedQuery());
-
-        $pageInfo = data_get($responseData, "data.{$this->key}.pageInfo", null);
-        $edgeData = collect(data_get($responseData, "data.{$this->key}.edges", []))->map(function ($item) {
-            return $item['node'];
-        });
-
-        return array_merge([
-            "pageInfo" => $pageInfo,
-            'records' => $edgeData
-        ]);
+    public function socialite()
+    {
+        return Socialite::driver('wave');
     }
-
-    public function getCustomers(
-        array $fields = ['id', 'name', 'email'],
-        array $arguments = [
-            'page' => 1,
-            'pageSize' => 10
-        ]
-    ) {
-        $this->validate(['accessToken']);
-
-        $this->key = 'customers';
-        $this->fields = $fields;
-        $this->queryObject = new Query('business');
-        $this->queryObject->addArguments(['id' => $this->businessId]);
-        $args = collect($arguments)->implode(function ($value, $key) {
-            return "{$key}: {$value}";
-        }, ', ');
-        $this->queryObject->addSelect([
-            "{$this->key}({$args})" => [
-                'pageInfo' => [
-                    'currentPage',
-                    'totalPages',
-                    'totalCount'
-                ],
-                'edges' => [
-                    'node' => $fields
-                ]
-            ]
-        ]);
-        $responseData = $this->execute($this->queryObject->getPreparedQuery());
-
-        $pageInfo = data_get($responseData, "data.business.{$this->key}.pageInfo", null);
-        $edgeData = collect(data_get($responseData, "data.business.{$this->key}.edges", []))->map(function ($item) {
-            return $item['node'];
-        });
-
-        return array_merge([
-            "pageInfo" => $pageInfo,
-            'records' => $edgeData
-        ]);
-    }
-
 
 }
