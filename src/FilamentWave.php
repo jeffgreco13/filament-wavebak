@@ -124,7 +124,7 @@ class FilamentWave
         return $this->accessToken;
     }
 
-    public function businessId(int $businessId)
+    public function businessId(string $businessId)
     {
         $this->businessId = $businessId;
         return $this;

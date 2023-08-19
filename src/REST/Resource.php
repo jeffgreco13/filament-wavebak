@@ -88,7 +88,7 @@ class Resource implements ArrayAccess, Arrayable
      *
      * @param  mixed  $offset
      * @param  mixed  $value
-     * @return void
+     * @return $this
      */
     #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
