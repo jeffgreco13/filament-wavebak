@@ -2,7 +2,9 @@
 
 namespace Jeffgreco13\FilamentWave;
 
+use Log;
 use Illuminate\Support\Facades\Http;
+use Jeffgreco13\FilamentWave\Exceptions;
 use Laravel\Socialite\Facades\Socialite;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
@@ -45,15 +47,37 @@ class FilamentWave
     public function execute(string $query)
     {
         $query = ['query' => $query];
-        $request = Http::withToken($this->accessToken)->asJson()->post(
+        $response = Http::withToken($this->accessToken)->asJson()->post(
             self::QUERYURL,
             $query
         );
-        if ($request->failed()) {
-            throw new \Exception('Wave returned a failure. Check your request and try again.');
+        if ($response->failed()) {
+            $errors = collect(data_get($response->json(),'errors',[]));
+            $error = $errors->first();
+            $code = data_get($error,'extensions.code',null);
+            $message = data_get($error,'message',null);
+            Log::debug($error);
+            switch ($code)
+            {
+                case "GRAPHQL_VALIDATION_FAILED":
+                    throw new Exceptions\MalformedQueryException("Malformed GraphQL query: {$message}");
+                    break;
+                case "NOT_FOUND":
+                    throw new Exceptions\ResourceNotFoundException("Resource not found: {$message}");
+                    break;
+                case "UNAUTHENTICATED":
+                    throw new Exceptions\AuthenticationException("Authentication failed: {$message}");
+                    break;
+                case "INTERNAL_SERVER_ERROR":
+                    throw new Exceptions\ExecutionException("Execution error: {$message}");
+                    break;
+                default:
+                    throw new \Exception('Wave GraphQL request failed with an unknown error.');
+            }
+
         }
 
-        return $request->json();
+        return $response->json();
     }
 
     protected function validate(array $properties = [])

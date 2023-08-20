@@ -18,6 +18,8 @@ class ManageCustomers extends ManageRecords
             // Actions\CreateAction::make(),
             Actions\Action::make('sync')
                 ->action(function () {
+                    FilamentWave::rawQuery('query { business }');
+
                     // dd(FilamentWave::allProducts());
                     // dd(FilamentWave::allBusinesses());
                     // FilamentWave::allCustomers()->map(function($customer){
