@@ -2,16 +2,15 @@
 
 namespace Jeffgreco13\FilamentWave;
 
-use Log;
 use Illuminate\Support\Facades\Http;
-use Jeffgreco13\FilamentWave\Exceptions;
-use Laravel\Socialite\Facades\Socialite;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesBusinesses;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Facades\Socialite;
+use Log;
 
 class FilamentWave
 {
@@ -55,23 +54,22 @@ class FilamentWave
             $query
         );
         if ($response->failed()) {
-            $errors = collect(data_get($response->json(),'errors',[]));
+            $errors = collect(data_get($response->json(), 'errors', []));
             $error = $errors->first();
-            $code = data_get($error,'extensions.code',null);
-            $message = data_get($error,'message',null);
+            $code = data_get($error, 'extensions.code', null);
+            $message = data_get($error, 'message', null);
             Log::debug($error);
-            switch ($code)
-            {
-                case "GRAPHQL_VALIDATION_FAILED":
+            switch ($code) {
+                case 'GRAPHQL_VALIDATION_FAILED':
                     throw new Exceptions\MalformedQueryException("Malformed GraphQL query: {$message}");
                     break;
-                case "NOT_FOUND":
+                case 'NOT_FOUND':
                     throw new Exceptions\ResourceNotFoundException("Resource not found: {$message}");
                     break;
-                case "UNAUTHENTICATED":
+                case 'UNAUTHENTICATED':
                     throw new Exceptions\AuthenticationException("Authentication failed: {$message}");
                     break;
-                case "INTERNAL_SERVER_ERROR":
+                case 'INTERNAL_SERVER_ERROR':
                     throw new Exceptions\ExecutionException("Execution error: {$message}");
                     break;
                 default:
