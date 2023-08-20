@@ -2,14 +2,12 @@
 
 namespace Jeffgreco13\FilamentWave\Models;
 
-use Spatie\Color\Rgb;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Support\Facades\FilamentColor;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Jeffgreco13\FilamentWave\REST\Customer as RESTCustomer;
-use function Illuminate\Events\queueable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Color\Rgb;
 
 class Customer extends Model
 {
@@ -21,7 +19,7 @@ class Customer extends Model
 
     protected $guarded = [];
 
-    protected $casts = ['meta'=>AsArrayObject::class,'address'=>'array'];
+    protected $casts = ['meta' => AsArrayObject::class, 'address' => 'array'];
 
     public $incrementing = false;
 
@@ -38,7 +36,7 @@ class Customer extends Model
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => $attributes['first_name']." ". $attributes['last_name'],
+            get: fn (mixed $value, array $attributes) => $attributes['first_name'].' '.$attributes['last_name'],
         );
     }
 
@@ -49,8 +47,9 @@ class Customer extends Model
             ->explode(' ')
             ->map(fn (string $segment): string => filled($segment) ? mb_substr($segment, 0, 1) : '')
             ->join(' ');
-        $backgroundColor = Rgb::fromString('rgb(' . FilamentColor::getColors()['gray'][950] . ')')->toHex();
-        $url = 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&color=FFFFFF&background=' . str($backgroundColor)->after('#');
+        $backgroundColor = Rgb::fromString('rgb('.FilamentColor::getColors()['gray'][950].')')->toHex();
+        $url = 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=FFFFFF&background='.str($backgroundColor)->after('#');
+
         return Attribute::make(
             get: fn () => $url,
         );
@@ -58,15 +57,17 @@ class Customer extends Model
 
     public function archive()
     {
-        $this->update(['is_archived'=>true]);
+        $this->update(['is_archived' => true]);
     }
+
     public function unarchive()
     {
         $this->update(['is_archived' => false]);
     }
+
     public function toggleArchive()
     {
-        if ($this->is_archived){
+        if ($this->is_archived) {
             $this->unarchive();
         } else {
             $this->archive();

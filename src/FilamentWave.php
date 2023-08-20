@@ -2,14 +2,14 @@
 
 namespace Jeffgreco13\FilamentWave;
 
-use Log;
-use MaxGraphQL\Types\Mutation;
 use Illuminate\Support\Facades\Http;
-use Laravel\Socialite\Facades\Socialite;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesBusinesses;
 use Jeffgreco13\FilamentWave\REST\Actions\ManagesCurrencies;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
+use Laravel\Socialite\Facades\Socialite;
+use Log;
+use MaxGraphQL\Types\Mutation;
 
 class FilamentWave
 {
@@ -45,10 +45,10 @@ class FilamentWave
         $this->clientSecret = $clientSecret ?? env('WAVE_CLIENT_SECRET');
     }
 
-    public function execute(string $query,array $variables = [])
+    public function execute(string $query, array $variables = [])
     {
         $query = ['query' => $query];
-        if (!empty($variables)){
+        if (! empty($variables)) {
             $query['variables'] = $variables;
         }
         $response = Http::withToken($this->accessToken)->asJson()->post(
@@ -124,13 +124,14 @@ class FilamentWave
             'inputErrors' => [
                 'code',
                 'message',
-                'path'
+                'path',
             ],
 
         ]);
         $query->addSelect($selectFields);
         // Hack the mutation string (required)
         $queryStr = str($query->getPreparedQuery())->replace('mutation', 'mutation ($input: '.$inputType.')');
+
         return $queryStr;
     }
 

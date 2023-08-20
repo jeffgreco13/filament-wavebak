@@ -3,11 +3,11 @@
 namespace Jeffgreco13\FilamentWave\Resources;
 
 use Filament\Forms;
-use Filament\Tables;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Jeffgreco13\FilamentWave\Models\Currency;
 use Jeffgreco13\FilamentWave\Resources\CustomerResource\Pages;
 
@@ -42,12 +42,12 @@ class CustomerResource extends Resource
                         Forms\Components\TextInput::make('email')
                             ->placeholder('mscott@dundermifflin.com')
                             ->email(),
-                        Forms\Components\TextInput::make('phone')
+                        Forms\Components\TextInput::make('phone'),
                     ]),
                 Forms\Components\Select::make('currency')
                     ->searchable()
                     ->placeholder('Use account default')
-                    ->options(Currency::all()->sortBy('code')->pluck('label','code')),
+                    ->options(Currency::all()->sortBy('code')->pluck('label', 'code')),
             ]);
     }
 
@@ -71,8 +71,7 @@ class CustomerResource extends Resource
                     ->searchable(['email', 'first_name', 'last_name'])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currency')
-                    ->toggleable(isToggledHiddenByDefault: true)
-
+                    ->toggleable(isToggledHiddenByDefault: true),
 
             ])
             ->filters([
@@ -83,14 +82,14 @@ class CustomerResource extends Resource
                     ->modalWidth('lg'),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('archive')
-                        ->label(fn($record) => $record->is_archived ? 'Restore' : 'Archive')
+                        ->label(fn ($record) => $record->is_archived ? 'Restore' : 'Archive')
                         ->color('warning')
                         ->icon('heroicon-s-archive-box')
-                        ->action(function($record){
+                        ->action(function ($record) {
                             $record->toggleArchive();
                         }),
-                    Tables\Actions\DeleteAction::make()
-                ])
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

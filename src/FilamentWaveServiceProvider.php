@@ -3,9 +3,9 @@
 namespace Jeffgreco13\FilamentWave;
 
 use Illuminate\Support\Facades\Event;
+use Jeffgreco13\FilamentWave\Commands\FetchWaveCurrencies;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Jeffgreco13\FilamentWave\Commands\FetchWaveCurrencies;
 
 class FilamentWaveServiceProvider extends PackageServiceProvider
 {

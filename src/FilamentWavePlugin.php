@@ -2,8 +2,8 @@
 
 namespace Jeffgreco13\FilamentWave;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
+use Filament\Panel;
 use Jeffgreco13\FilamentWave\Models\Customer;
 use Jeffgreco13\FilamentWave\Resources\CustomerResource;
 
@@ -12,6 +12,7 @@ class FilamentWavePlugin implements Plugin
     protected bool $hasCustomers = false;
 
     protected $customerResource;
+
     protected $customerModel;
 
     public function getId(): string

@@ -2,10 +2,10 @@
 
 namespace Jeffgreco13\FilamentWave\Models;
 
-use Exception;
 use ArrayAccess;
-use Illuminate\Support\Arr;
+use Exception;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 use Jeffgreco13\FilamentWave\Exceptions\ResourceNotFoundException;
 
 class Currency implements Arrayable, ArrayAccess
@@ -14,25 +14,26 @@ class Currency implements Arrayable, ArrayAccess
 
     public static function find(string $code)
     {
-        return self::all()->first(function($item) use ($code){
+        return self::all()->first(function ($item) use ($code) {
             return $item->code == $code;
         });
     }
 
     public static function all()
     {
-        $file = storage_path("wave_currencies.json");
-        if (!file_exists($file)){
+        $file = storage_path('wave_currencies.json');
+        if (! file_exists($file)) {
             throw new ResourceNotFoundException('Currency data not found. Try running php artisan wave:fetch-currencies.');
         }
         $collection = collect(
             json_decode(file_get_contents($file), true)
         );
-        return $collection->map(function($item){
+
+        return $collection->map(function ($item) {
             return new self(
                 array_merge(
                     $item,
-                    ['label'=>"({$item['code']}) {$item['name']}"]
+                    ['label' => "({$item['code']}) {$item['name']}"]
                 )
             );
         });
@@ -73,7 +74,7 @@ class Currency implements Arrayable, ArrayAccess
             return $this->getAttribute($key);
         }
 
-        throw new Exception('Property ' . $key . ' does not exist on ' . get_called_class());
+        throw new Exception('Property '.$key.' does not exist on '.get_called_class());
     }
 
     /**

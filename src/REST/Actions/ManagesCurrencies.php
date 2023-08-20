@@ -2,7 +2,6 @@
 
 namespace Jeffgreco13\FilamentWave\REST\Actions;
 
-use Illuminate\Support\Collection;
 use MaxGraphQL\Types\Query;
 
 trait ManagesCurrencies
@@ -15,15 +14,16 @@ trait ManagesCurrencies
 
     public function allCurrencies()
     {
-        $query = new Query("currencies");
+        $query = new Query('currencies');
         $query->addSelect([
             'code',
             'symbol',
             'name',
             'plural',
-            'exponent'
+            'exponent',
         ]);
         $responseData = $this->execute($query->getPrepareDQuery());
-        return data_get($responseData,'data.currencies',[]);
+
+        return data_get($responseData, 'data.currencies', []);
     }
 }

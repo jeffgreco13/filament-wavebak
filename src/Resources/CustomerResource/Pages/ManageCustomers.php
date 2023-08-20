@@ -3,12 +3,11 @@
 namespace Jeffgreco13\FilamentWave\Resources\CustomerResource\Pages;
 
 use Filament\Actions;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Resources\Pages\ManageRecords;
 use Filament\Resources\Pages\ListRecords\Tab;
-use Jeffgreco13\FilamentWave\Models\Customer;
+use Filament\Resources\Pages\ManageRecords;
+use Illuminate\Database\Eloquent\Builder;
 use Jeffgreco13\FilamentWave\Facades\FilamentWave;
-use Jeffgreco13\FilamentWave\Resources\CustomerResource;
+use Jeffgreco13\FilamentWave\Models\Customer;
 
 class ManageCustomers extends ManageRecords
 {
@@ -30,7 +29,7 @@ class ManageCustomers extends ManageRecords
                         FilamentWave::allCustomers()->map(function ($customer) use (&$ids) {
                             $ids[] = $customer->id;
                             Customer::updateOrCreate([
-                                'id' => $customer->id
+                                'id' => $customer->id,
                             ], [
                                 'name' => $customer->name,
                                 'email' => $customer->email,
