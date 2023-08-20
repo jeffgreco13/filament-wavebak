@@ -5,6 +5,7 @@ namespace Jeffgreco13\FilamentWave;
 use Illuminate\Support\Facades\Event;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Jeffgreco13\FilamentWave\Commands\FetchWaveCurrencies;
 
 class FilamentWaveServiceProvider extends PackageServiceProvider
 {
@@ -16,7 +17,8 @@ class FilamentWaveServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package
-            ->name('filament-wave');
+            ->name('filament-wave')
+            ->hasCommands([FetchWaveCurrencies::class]);
         // ->hasMigration('create_filament_wave_customers_table');
     }
 

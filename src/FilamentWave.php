@@ -2,19 +2,18 @@
 
 namespace Jeffgreco13\FilamentWave;
 
-use Illuminate\Support\Facades\Http;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesBusinesses;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
-use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
-use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Facades\Socialite;
 use Log;
+use MaxGraphQL\Types\Mutation;
+use Illuminate\Support\Facades\Http;
+use Laravel\Socialite\Facades\Socialite;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesProducts;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesCustomers;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesBusinesses;
+use Jeffgreco13\FilamentWave\REST\Actions\ManagesCurrencies;
 
 class FilamentWave
 {
-    use ManagesCustomers, ManagesBusinesses, ManagesProducts;
+    use ManagesCustomers, ManagesBusinesses, ManagesProducts, ManagesCurrencies;
 
     const AUTHURL = 'https://api.waveapps.com/oauth2/authorize';
 
@@ -46,9 +45,12 @@ class FilamentWave
         $this->clientSecret = $clientSecret ?? env('WAVE_CLIENT_SECRET');
     }
 
-    public function execute(string $query)
+    public function execute(string $query,array $variables = [])
     {
         $query = ['query' => $query];
+        if (!empty($variables)){
+            $query['variables'] = $variables;
+        }
         $response = Http::withToken($this->accessToken)->asJson()->post(
             self::QUERYURL,
             $query
@@ -112,6 +114,24 @@ class FilamentWave
             ->implode(function ($value, $key) {
                 return "{$key}: {$value}";
             }, ', ');
+    }
+
+    protected function buildMutationString(string $name, string $inputType, array $selectFields = [])
+    {
+        $query = new Mutation($name.' (input: $input)');
+        $query->addSelect([
+            'didSucceed',
+            'inputErrors' => [
+                'code',
+                'message',
+                'path'
+            ],
+
+        ]);
+        $query->addSelect($selectFields);
+        // Hack the mutation string (required)
+        $queryStr = str($query->getPreparedQuery())->replace('mutation', 'mutation ($input: '.$inputType.')');
+        return $queryStr;
     }
 
     public function page(int $page)
